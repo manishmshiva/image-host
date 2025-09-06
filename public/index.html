@@ -10,10 +10,9 @@
     h1 { font-size: 1.25rem; margin-bottom: 1rem; }
     form, .card { border: 1px solid #9993; padding: 1rem; border-radius: 12px; }
     input[type="file"] { margin: .5rem 0 1rem; }
-    button { padding: .6rem 1rem; border-radius: 10px; border: 1px solid #9995; background: #eee; cursor: pointer; }
+    button { padding: .6rem 1rem; border-radius: 10px; border: 1px solid #9995; background: #0000FF; cursor: pointer; }
     #result { margin-top: 1rem; display: none; }
     #result a { word-break: break-all; }
-    #preview { margin-top: .75rem; max-width: 100%; border-radius: 8px; }
   </style>
 </head>
 <body>
@@ -29,8 +28,6 @@
 
   <div id="result" class="card">
     <div><strong>Share this page:</strong> <a id="pageUrl" href="#" target="_blank" rel="noopener"></a></div>
-    <div style="margin-top:.5rem;"><strong>Direct image URL:</strong> <a id="directUrl" href="#" target="_blank" rel="noopener"></a></div>
-    <img id="preview" alt="Uploaded image preview"/>
   </div>
 
   <script>
@@ -39,7 +36,6 @@
     const result = document.getElementById('result');
     const pageUrlEl = document.getElementById('pageUrl');
     const directUrlEl = document.getElementById('directUrl');
-    const preview = document.getElementById('preview');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -62,10 +58,6 @@
         pageUrlEl.textContent = data.pageUrl;
         pageUrlEl.href = data.pageUrl;
 
-        directUrlEl.textContent = data.directUrl;
-        directUrlEl.href = data.directUrl;
-
-        preview.src = data.directUrl;
         result.style.display = 'block';
         statusEl.textContent = 'Done!';
         form.reset();
