@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pic Host</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: system-ui, sans-serif; max-width: 560px; margin: 4rem auto; padding: 0 1rem; }
+    h1 { font-size: 1.25rem; margin-bottom: 1rem; }
+    form, .card { border: 1px solid #9993; padding: 1rem; border-radius: 12px; }
+    input[type="file"] { margin: .5rem 0 1rem; }
+    button { padding: .6rem 1rem; border-radius: 10px; border: 1px solid #9995; background: #eee; cursor: pointer; }
+    #result { margin-top: 1rem; display: none; }
+    #result a { word-break: break-all; }
+    #preview { margin-top: .75rem; max-width: 100%; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Simple Image Host</h1>
+
+  <form id="uploadForm" class="card">
+    <label for="file">Choose image</label><br/>
+    <input id="file" name="file" type="file" accept="image/*" required />
+    <br/>
+    <button type="submit">Upload</button>
+    <div id="status" aria-live="polite" style="margin-top:.75rem;"></div>
+  </form>
+
+  <div id="result" class="card">
+    <div><strong>Share this page:</strong> <a id="pageUrl" href="#" target="_blank" rel="noopener"></a></div>
+    <div style="margin-top:.5rem;"><strong>Direct image URL:</strong> <a id="directUrl" href="#" target="_blank" rel="noopener"></a></div>
+    <img id="preview" alt="Uploaded image preview"/>
+  </div>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const statusEl = document.getElementById('status');
+    const result = document.getElementById('result');
+    const pageUrlEl = document.getElementById('pageUrl');
+    const directUrlEl = document.getElementById('directUrl');
+    const preview = document.getElementById('preview');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      statusEl.textContent = 'Uploading...';
+      result.style.display = 'none';
+
+      const fd = new FormData();
+      const file = document.getElementById('file').files[0];
+      if (!file) {
+        statusEl.textContent = 'Pick a file first.';
+        return;
+      }
+      fd.append('file', file);
+
+      try {
+        const res = await fetch('/upload', { method: 'POST', body: fd });
+        if (!res.ok) throw new Error('Upload failed');
+        const data = await res.json();
+
+        pageUrlEl.textContent = data.pageUrl;
+        pageUrlEl.href = data.pageUrl;
+
+        directUrlEl.textContent = data.directUrl;
+        directUrlEl.href = data.directUrl;
+
+        preview.src = data.directUrl;
+        result.style.display = 'block';
+        statusEl.textContent = 'Done!';
+        form.reset();
+      } catch (err) {
+        statusEl.textContent = 'Error: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
+
